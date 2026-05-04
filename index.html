@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eristyx — Digital Reality Lab</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070708;
+      --surface: rgba(20, 22, 27, 0.88);
+      --surface-soft: rgba(255,255,255,0.04);
+      --border: rgba(138, 95, 255, 0.25);
+      --accent1: #b24cff;
+      --accent2: #33f7ca;
+      --accent3: #46c2ff;
+      --text: #e9eef3;
+      --muted: #8a95a5;
+      --shadow: 0 40px 120px rgba(0,0,0,0.35);
+      font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, rgba(107, 69, 255, 0.14), transparent 24%),
+                  radial-gradient(circle at bottom right, rgba(49, 255, 194, 0.08), transparent 18%),
+                  linear-gradient(180deg, #09090b 0%, #050506 100%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.06), transparent 25%),
+                  radial-gradient(circle at 20% 90%, rgba(80, 111, 255, 0.08), transparent 16%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 11px 11px;
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 24s linear infinite;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to { transform: translate(-140px, 140px); }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+    }
+
+    header {
+      display: grid;
+      gap: 1.8rem;
+      padding-top: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: "Segoe UI Black", sans-serif;
+      letter-spacing: 0.16em;
+    }
+
+    .brand span {
+      display: inline-flex;
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      box-shadow: 0 0 20px rgba(178,76,255,0.5);
+    }
+
+    .hero {
+      display: grid;
+      gap: 2rem;
+      align-items: center;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      min-height: calc(100vh - 160px);
+    }
+
+    .hero-copy {
+      max-width: 720px;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(3.8rem, 5vw, 6.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      max-width: 58ch;
+      margin: 1.6rem 0 0;
+      font-size: 1.01rem;
+      line-height: 1.9;
+      color: rgba(233,238,243,0.8);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2.2rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      padding: 1rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.13);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      backdrop-filter: blur(16px);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 42px rgba(80, 68, 255, 0.22);
+      border-color: rgba(178,76,255,0.55);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, rgba(178,76,255,0.95), rgba(51,247,202,0.92));
+      color: #040410;
+      border-color: transparent;
+      box-shadow: 0 18px 60px rgba(97, 70, 255, 0.25);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 32px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(178,76,255,0.25), transparent 18%),
+                  radial-gradient(circle at 80% 80%, rgba(51,247,202,0.2), transparent 16%);
+      opacity: 0.9;
+    }
+
+    .hero-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 40%);
+      mix-blend-mode: screen;
+      opacity: 0.8;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      border: 1px solid rgba(178,76,255,0.45);
+      filter: blur(0.4px);
+      animation: pulse 9s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .pulse-ring:nth-child(2) {
+      width: 300px;
+      height: 300px;
+      border-color: rgba(51,247,202,0.34);
+      animation-duration: 12s;
+      top: 26%;
+      left: 18%;
+    }
+
+    .hero-visual .grid-block {
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 1.4rem;
+      padding: 2rem;
+      z-index: 1;
+    }
+
+    .hero-visual .grid-block span {
+      display: block;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(3,4,9,0.55);
+      backdrop-filter: blur(24px);
+      box-shadow: inset 0 0 32px rgba(255,255,255,0.02);
+    }
+
+    .hero-visual .grid-block span::before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(178,76,255,0.7), rgba(51,247,202,0.45));
+      opacity: 0.12;
+      mix-blend-mode: screen;
+    }
+
+    .hero-visual .grid-block span:nth-child(1) { grid-column: 1 / span 2; }
+    .hero-visual .grid-block span:nth-child(4) { grid-row: 2 / span 2; }
+
+    .hero-visual .tag {
+      position: absolute;
+      left: 28px;
+      bottom: 36px;
+      background: rgba(0,0,0,0.45);
+      padding: 0.65rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--accent1);
+      font-size: 0.82rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      backdrop-filter: blur(24px);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1) translate(-10%, -5%); opacity: 0.88; }
+      50% { transform: scale(1.04) translate(8%, 6%); opacity: 0.55; }
+    }
+
+    main {
+      display: grid;
+      gap: 3.5rem;
+      margin-top: 2rem;
+    }
+
+    section {
+      position: relative;
+      padding: 3rem 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    section:first-of-type { border-top: 0; }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .panel {
+      background: rgba(18, 20, 26, 0.82);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 32px;
+      padding: 2.2rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: clamp(2rem, 2.5vw, 2.9rem);
+      letter-spacing: -0.05em;
+    }
+
+    .panel p {
+      line-height: 1.9;
+      color: rgba(233,238,243,0.78);
+    }
+
+    .overview-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .overview-grid .card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      padding: 1.8rem;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01), 0 24px 68px rgba(0,0,0,0.22);
+      transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .overview-grid .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(51,247,202,0.5);
+      box-shadow: 0 30px 70px rgba(39, 239, 207, 0.14);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .overview-grid .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, transparent, rgba(51,247,202,0.15));
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .overview-grid .card:hover::before { opacity: 1; }
+
+    .overview-grid .icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--accent3);
+      font-size: 1.1rem;
+      box-shadow: inset 0 0 20px rgba(255,255,255,0.06);
+    }
+
+    .overview-grid h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    .overview-grid p { margin: 0; color: rgba(233,238,243,0.77); }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+      position: relative;
+      padding-left: 2.5rem;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 20px;
+      bottom: 20px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(178,76,255,0.4));
+      border-radius: 999px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 0.4rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      box-shadow: 0 0 18px rgba(178,76,255,0.45);
+    }
+
+    .timeline-item strong {
+      display: inline-block;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: rgba(233,238,243,0.79);
+      line-height: 1.9;
+    }
+
+    .projects {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+
+    .project-card {
+      position: relative;
+      min-height: 260px;
+      padding: 2rem;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(4, 6, 10, 0.9);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.4s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(66,184,255,0.15), transparent 34%),
+                  radial-gradient(circle at bottom right, rgba(178,76,255,0.16), transparent 28%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .project-card .meta {
+      display: grid;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .project-card .project-title {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: -0.03em;
+    }
+
+    .project-card .project-label {
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .project-card .project-note {
+      color: rgba(233,238,243,0.75);
+      line-height: 1.8;
+    }
+
+    .project-card .hidden {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      color: rgba(178,76,255,0.9);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .project-card:hover .hidden {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .statement-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .statement {
+      padding: 2.2rem;
+      border-radius: 28px;
+      background: rgba(8, 10, 15, 0.95);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #f5f7fb;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+      display: grid;
+      gap: 1rem;
+    }
+
+    .statement h3 {
+      margin: 0;
+      font-size: 2.2rem;
+      line-height: 1.05;
+      letter-spacing: -0.08em;
+    }
+
+    .statement p {
+      margin: 0;
+      color: rgba(233,238,243,0.72);
+      font-size: 0.96rem;
+      line-height: 1.9;
+    }
+
+    .tech-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+
+    .tech-tag {
+      padding: 1.35rem 1.5rem;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(9, 11, 16, 0.86);
+      position: relative;
+      overflow: hidden;
+      color: var(--text);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .tech-tag:hover {
+      transform: translateY(-6px);
+      border-color: rgba(178,76,255,0.55);
+    }
+
+    .tech-tag::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(178,76,255,0.14) 45%, transparent 90%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .tech-tag:hover::before { opacity: 1; }
+
+    .tech-tag span {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    .tech-tag strong {
+      display: block;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    .cta-panel {
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(178,76,255,0.12), rgba(51,247,202,0.08));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 38px;
+      padding: 3rem 2rem;
+      overflow: hidden;
+    }
+
+    .cta-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 32%);
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .cta-panel h2 {
+      margin: 0;
+      font-size: clamp(2.6rem, 4vw, 4rem);
+      letter-spacing: -0.05em;
+      max-width: 10ch;
+      z-index: 1;
+    }
+
+    .cta-panel a {
+      margin-top: 2rem;
+      width: max-content;
+      z-index: 1;
+      position: relative;
+    }
+
+    .pulse-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, rgba(178,76,255,0.9), rgba(51,247,202,0.9));
+      color: #05060a;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      box-shadow: 0 20px 60px rgba(50, 238, 207, 0.2);
+      animation: glow 2.7s infinite ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pulse-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(255,255,255,0.14), transparent 55%, rgba(255,255,255,0.08));
+      opacity: 0.4;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 20px 70px rgba(51,247,202,0.25); transform: translateY(0); }
+      50% { box-shadow: 0 24px 90px rgba(178,76,255,0.3); transform: translateY(-2px); }
+    }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.5rem 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .footer-left strong {
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .social-links a {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--accent2);
+      text-decoration: none;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .social-links a:hover {
+      transform: translateY(-2px);
+      background: rgba(51,247,202,0.1);
+    }
+
+    @media(max-width: 1120px) {
+      .hero { grid-template-columns: 1fr; }
+      .split, .projects, .statement-grid, .tech-grid { grid-template-columns: 1fr; }
+      section { padding: 2.5rem 0; }
+      .hero-visual { min-height: 360px; }
+    }
+
+    @media(max-width: 720px) {
+      .page { padding: 28px 20px 60px; }
+      .hero h1 { font-size: clamp(3rem, 9vw, 4.6rem); }
+      .hero-visual .grid-block { grid-template-columns: 1fr 1fr; }
+      .hero-visual .grid-block span:nth-child(1) { grid-column: auto; }
+      .hero-visual .grid-block span:nth-child(4) { grid-row: auto; }
+      .timeline { padding-left: 1.6rem; }
+      .timeline::before { left: 8px; }
+      .timeline-item::before { left: -12px; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .button { width: 100%; }
+      .project-card { min-height: 220px; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="topbar">
+        <div class="brand"><span></span>ERISTYX</div>
+        <div>eristyx.online</div>
+      </div>
+
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">Digital systems lab</div>
+          <h1>We Build Digital Realities Beyond Limits.</h1>
+          <p>Experimental technology, AI-infused interfaces and brand systems designed for a future where experience is the product. Eristyx creates modern digital systems with an elite, high-performance visual identity.</p>
+          <div class="hero-actions">
+            <a href="#identity" class="button primary">Explore Eristyx</a>
+            <a href="#systems" class="button">View Our Systems</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+          <div class="grid-block">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="tag">Layer 01</div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="identity">
+        <div class="split">
+          <div class="panel">
+            <h2>What is Eristyx?</h2>
+            <p>Eristyx is a next-generation digital innovation studio that merges experimental technology with creative engineering. We architect immersive interface systems, intelligent branding and digital structures that feel futuristic, artistic and profoundly intentional.</p>
+          </div>
+          <div class="panel" style="display:grid; gap:1.4rem;">
+            <div class="overview-grid">
+              <div class="card"><div class="icon">01</div><h3>Digital Experimentation</h3><p>Protoype bold concepts, hybrid visuals and systems-first thinking.</p></div>
+              <div class="card"><div class="icon">02</div><h3>AI + Design Fusion</h3><p>Design experiences powered by smart modules and adaptive interface logic.</p></div>
+              <div class="card"><div class="icon">03</div><h3>Future Interface Systems</h3><p>Build scalable ecosystems for brand, product and immersive digital layers.</p></div>
+              <div class="card"><div class="icon">04</div><h3>Reactive Creative Engineering</h3><p>Apply modern craft to create elegant, high-impact visual systems.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="services">
+        <div class="panel">
+          <h2>Core Offerings</h2>
+          <div class="overview-grid" style="margin-top:1.8rem;">
+            <div class="card"><div class="icon">UI</div><h3>UI / UX Systems Design</h3><p>Design fluent interfaces for immersive digital products and futuristic dashboards.</p></div>
+            <div class="card"><div class="icon">AI</div><h3>AI Product Interfaces</h3><p>Craft intelligent experiences where the interface adapts with context and motion.</p></div>
+            <div class="card"><div class="icon">BR</div><h3>Brand Identity Engineering</h3><p>Build premium visual systems that feel elite, enigmatic and unmistakably modern.</p></div>
+            <div class="card"><div class="icon">DX</div><h3>Digital Experience Architecture</h3><p>Plan multi-layered journeys that connect brand, tech and creative expression.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="systems">
+        <div class="panel">
+          <h2>System Approach</h2>
+          <div class="timeline">
+            <div class="timeline-item"><strong>Concept Engineering</strong><p>Define the future-facing vision with radical interface hypotheses and system scaffolds.</p></div>
+            <div class="timeline-item"><strong>Interface Design</strong><p>Transform structure into a refined visual language, blending typography, motion and spatial form.</p></div>
+            <div class="timeline-item"><strong>AI Integration</strong><p>Embed intelligent layers that sense, adapt and respond across touchpoints with subtle precision.</p></div>
+            <div class="timeline-item"><strong>Experience Deployment</strong><p>Deliver polished digital systems with cinematic execution and performance-first architecture.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="portfolio">
+        <div class="panel">
+          <h2>Experiments</h2>
+          <div class="projects">
+            <div class="project-card"><div class="meta"><p class="project-label">SYSTEM PROTOTYPE</p><h3 class="project-title">Neural Grid Wave</h3><p class="project-note">A visual architecture for adaptive content layers that feel alive and data-driven.</p><span class="hidden">Hidden detail: Modular shimmer logic</span></div></div>
+            <div class="project-card"><div class="meta"><p class="project-label">INTERFACE LAB</p><h3 class="project-title">Chromatic Pulse Engine</h3><p class="project-note">A motion-based UI environment designed for premium immersive navigation.</p><span class="hidden">Hidden detail: Pulse-driven hierarchy</span></div></div>
+            <div class="project-card"><div class="meta"><p class="project-label">BRAND SYSTEM</p><h3 class="project-title">Eristyx Signal Matrix</h3><p class="project-note">A brand surface built from glowing grids, translucent layers and high-contrast presence.</p><span class="hidden">Hidden detail: Responsive glow mesh</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="philosophy">
+        <div class="panel">
+          <h2>Philosophy</h2>
+          <div class="statement-grid" style="margin-top:1.8rem;">
+            <div class="statement"><h3>We don’t design websites. We design systems.</h3><p>Every interface is treated as an intelligent layer in a broader digital ecosystem.</p></div>
+            <div class="statement"><h3>Eristyx builds interfaces that think.</h3><p>Our work is rooted in motion, logic and a sense of enigmatic premium craft.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tech">
+        <div class="panel">
+          <h2>Tech Layer</h2>
+          <div class="tech-grid" style="margin-top:1.8rem;">
+            <div class="tech-tag"><span>AI DRIVEN</span><strong>Design systems that learn and adapt</strong></div>
+            <div class="tech-tag"><span>NEURAL UI</span><strong>Patterns built for cognitive flow</strong></div>
+            <div class="tech-tag"><span>ADAPTIVE</span><strong>Interfaces that respond to context</strong></div>
+            <div class="tech-tag"><span>FUTURE READY</span><strong>Infrastructure built for evolving products</strong></div>
+            <div class="tech-tag"><span>VISUAL CODE</span><strong>Geometry, glow and interface logic aligned</strong></div>
+            <div class="tech-tag"><span>CLIENT LAYER</span><strong>Premium digital experience architecture</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="action">
+        <div class="cta-panel">
+          <h2>Enter the Eristyx Layer</h2>
+          <a href="#" class="pulse-button">Activate Presence</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-left"><strong>eristyx</strong><span>Beyond Interface. Beyond Reality.</span></div>
+      <div class="social-links">
+        <a href="#" aria-label="Twitter">T</a>
+        <a href="#" aria-label="Dribbble">D</a>
+        <a href="#" aria-label="LinkedIn">L</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
